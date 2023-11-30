@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import sys
-import sklearn
+# import sklearn
 import io
 import random
 from sklearn.model_selection import train_test_split

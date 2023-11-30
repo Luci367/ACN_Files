@@ -17,8 +17,6 @@ import statistics
 
 #ping - h1 ping h2
 
-
-
 class MyController(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
@@ -94,84 +92,6 @@ class MyController(app_manager.RyuApp):
                         self.handle_icmp_packet(parser, datapath, msg, pkt, eth, in_port, src, dst, ip,protocol,packet_type,actions)
                     elif protocol == in_proto.IPPROTO_UDP:
                         self.handle_udp_packet(parser, datapath, msg, pkt, eth, in_port, src, dst, ip,actions)
-                        # icmp_packet = pkt.get_protocol(icmp.icmp)
-                        # if icmp_packet is not None:
-                        #     icmp_type = icmp_packet.type
-
-                        #     # # Store ICMP type in the list
-                        #     # self.icmp_types.append(icmp_type)
-
-                        #     icmp_code = icmp_packet.code
-
-                        #     match = parser.OFPMatch(
-                        #         eth_type=ether_types.ETH_TYPE_IP,
-                        #         ipv4_src=ip.src,
-                        #         ipv4_dst=ip.dst,
-                        #         ip_proto=protocol,
-                        #         icmpv4_type=icmp_type,
-                        #         icmpv4_code=icmp_code
-                        #     )
-
-                        #     flow_key = (src, dst, protocol, icmp_type, icmp_code)  # identifier
-
-                        #     packet_length = len(msg.data)
-                        #     print(f"Packet length: {packet_length} bytes")
-                        #     print()
-                        #     packet_time = time.time()
-                        #     print(f"Packet received at time {packet_time}")
-                        #     print()
-                            
-
-                        #     self.store_packet_info(flow_key, packet_length, packet_time)
-
-                        #     #storing icmp types for flow
-                        #     if flow_key not in self.flow_icmp_types:
-                        #         self.flow_icmp_types[flow_key] = []
-
-                        #     self.flow_icmp_types[flow_key].append(icmp_type)
-
-                        #     #storing header length of a flow
-                        #     eth_header_len = len(eth)  # Ethernet header length
-                        #     ip_header_len = (ip.header_length & 0xF) * 4  # IPv4 header length
-                        #     icmp_header_len = len(icmp_packet)  # ICMPv4 header length
-
-                        #     if flow_key not in self.flow_header_lengths:
-                        #         self.flow_header_lengths[flow_key] = {'eth': [], 'ip': [], 'icmp': []}
-
-                        #     self.flow_header_lengths[flow_key]['eth'].append(eth_header_len)
-                        #     self.flow_header_lengths[flow_key]['ip'].append(ip_header_len)
-                        #     self.flow_header_lengths[flow_key]['icmp'].append(icmp_header_len)
-
-
-
-
-                            
-
-                            # if flow_key not in self.packet_counters:
-                            #     self.packet_counters[flow_key] = 0
-                            
-                            # self.packet_counters[flow_key] += 1
-                            # # print(f'{flow_key[0]} to {flow_key[1]}: No. {self.packet_counters[flow_key]}')
-
-                            # if self.packet_counters[flow_key] == 10:
-                            #     #adding flow after 100 packets
-                            #     # match = parser.OFPMatch(eth_src=src, eth_dst=dst)
-                            #     self.calculate_and_print_features(flow_key)
-                            #     self.add_flow(datapath, 1, match, actions, hard=20)
-                            #     print("Flow entry added.")
-
-                            #     self.packet_counters[flow_key] = 0
-                            # else:
-                            #     out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
-                            #                         in_port=in_port, actions=actions, data=msg.data)
-                            #     datapath.send_msg(out)
-                        # else:
-                        #     # Forward the packet to the destination without adding a flow entry
-                        #     out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
-                        #                             in_port=in_port, actions=actions, data=msg.data)
-                        #     datapath.send_msg(out)
-                        #     print(f"{packet_type} packet forwarded")
-                        #     print()
                     else:
                         # Add a flow entry for non-ICMP packets
                         match = parser.OFPMatch(
@@ -305,17 +225,7 @@ class MyController(app_manager.RyuApp):
 
             self.store_header_lengths( flow_key, eth_header_len, ip_header_len, icmp_header_len)
 
-            # if flow_key not in self.flow_header_lengths:
-            #     self.flow_header_lengths[flow_key] = {'eth': [], 'ip': [], 'icmp': []}
-
-            # self.flow_header_lengths[flow_key]['eth'].append(eth_header_len)
-            # self.flow_header_lengths[flow_key]['ip'].append(ip_header_len)
-            # self.flow_header_lengths[flow_key]['icmp'].append(icmp_header_len)
-
             self.handle_packet(parser,msg,in_port, match, actions, datapath, flow_key)
-
-
-
         
         else:
             # Forward the packet to the destination without adding a flow entry
@@ -324,27 +234,6 @@ class MyController(app_manager.RyuApp):
             datapath.send_msg(out)
             print(f"{packet_type} packet forwarded")
             print()
-
-
-
-
-
-            
-
-            # if flow_key not in self.packet_counters:
-            #     self.packet_counters[flow_key] = 0
-            
-            # self.packet_counters[flow_key] += 1
-            # # print(f'{flow_key[0]} to {flow_key[1]}: No. {self.packet_counters[flow_key]}')
-
-            # if self.packet_counters[flow_key] == 10:
-            #     #adding flow after 100 packets
-            #     # match = parser.OFPMatch(eth_src=src, eth_dst=dst)
-            #     self.calculate_and_print_features(flow_key)
-            #     self.add_flow(datapath, 1, match, actions, hard=20)
-            #     print("Flow entry added.")
-
-            #     self.packet_counters[flow_key] = 0
 
     def handle_packet(self,parser,msg,in_port, match, actions, datapath, flow_key):
 
@@ -367,30 +256,6 @@ class MyController(app_manager.RyuApp):
             out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
                                 in_port=in_port, actions=actions, data=msg.data)
             datapath.send_msg(out)
-
-        # packet_time = time.time()
-        # print(f"Packet received at time {packet_time}")
-        # print()
-        
-
-        
-
-        # if flow_key not in self.packet_counters:
-        #     self.packet_counters[flow_key] = 0
-        
-        # self.packet_counters[flow_key] += 1
-
-        # if self.packet_counters[flow_key] == 100:
-        #     #adding flow after 100 packets
-        #     # match = parser.OFPMatch(eth_src=src, eth_dst=dst)
-        #     self.add_flow(datapath, 1, match, actions)
-        #     print("Flow entry added.")
-
-        #     self.packet_counters[flow_key] = 0
-        # # else:
-        # #     out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
-        # #                           in_port=in_port, actions=actions, data=data)
-        # #     datapath.send_msg(out)
 
     def store_packet_info(self, flow_key, packet_length, packet_time):
         # Initialize information for the flow if not exists
